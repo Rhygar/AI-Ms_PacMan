@@ -41,13 +41,16 @@ public class MyPacMan extends Controller<MOVE> {
 		
 		//3. Otherwise, if the attribute list is empty, return N as a leaf node labeled with the majority class in D
 		if(attributeList.length == 0) {
-			
+			N.isLeafNode = true;
+			N.myMove = majorityClass(dataTuples);
+			return N;
 		}
 		
 		//4. Otherwise:
 		
 		//4.1 Call the attribute selection method on D and the attribute list, in order to choose the current attribute A:
 				//A = S(D, attribute list)
+
 		//4.2 Label N as A and remove A from the attribute list
 		
 		//4.3 For each value in aj in attribute A:
