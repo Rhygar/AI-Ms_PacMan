@@ -263,5 +263,57 @@ public class DataTuple {
 		double aux = this.normalizeCurrentScore(score);
 		return DiscreteTag.DiscretizeDouble(aux);
 	}
+	
+	public String discreteDistance(int distance) {
+		String returnString = "";
+		if(distance <= 20 && distance >= 0) {
+			returnString = "LOW";
+		} else if(distance > 20 && distance < 50) {
+			returnString = "MEDIUM";
+		} else {
+			returnString = "HIGH";
+		}
+		return returnString;
+	}
+	
+	public String discreteBoolean(boolean b) {
+		if(b) {
+			return "YES";
+		} else {
+			return "NO";
+		}
+	}
+	
+	public String getAttributeValue(String attribute) {
+		String returnString = "";
+		switch(attribute) {
+			case "isBlinkyEdible":
+				returnString = discreteBoolean(isBlinkyEdible);
+				break;
+			case "isInkyEdible":
+				returnString = discreteBoolean(isInkyEdible);
+				break;
+			case "isPinkEdible":
+				returnString = discreteBoolean(isPinkyEdible);
+				break;
+			case "isSueEdible":
+				returnString = discreteBoolean(isSueEdible);
+				break;
+			case "blinkyDist":
+				returnString = discreteDistance(blinkyDist);
+				break;
+			case "inkyDist":
+				returnString = discreteDistance(inkyDist);
+				break;
+			case "pinkyDist":
+				returnString = discreteDistance(pinkyDist);
+				break;
+			case "sueDist":
+				returnString = discreteDistance(sueDist);
+				break;
+		}
+		return returnString;
+	}
+	
 
 }
