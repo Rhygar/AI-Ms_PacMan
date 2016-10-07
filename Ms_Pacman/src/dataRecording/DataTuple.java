@@ -37,6 +37,10 @@ public class DataTuple {
 	public int currentLevelTime;
 	public int numOfPillsLeft;
 	public int numOfPowerPillsLeft;
+	public int blinkyIndex;
+	public int inkyIndex;
+	public int pinkyIndex;
+	public int sueIndex;
 
 	// Ghost this, dir, dist, edible - BLINKY, INKY, PINKY, SUE
 	public boolean isBlinkyEdible = false;
@@ -76,6 +80,10 @@ public class DataTuple {
 		this.currentLevelTime = game.getCurrentLevelTime();
 		this.numOfPillsLeft = game.getNumberOfActivePills();
 		this.numOfPowerPillsLeft = game.getNumberOfActivePowerPills();
+		this.blinkyIndex = game.getGhostCurrentNodeIndex(GHOST.BLINKY);
+		this.inkyIndex = game.getGhostCurrentNodeIndex(GHOST.INKY);
+		this.pinkyIndex = game.getGhostCurrentNodeIndex(GHOST.PINKY);
+		this.sueIndex = game.getGhostCurrentNodeIndex(GHOST.SUE);
 
 		if (game.getGhostLairTime(GHOST.BLINKY) == 0) {
 			this.isBlinkyEdible = game.isGhostEdible(GHOST.BLINKY);
@@ -311,6 +319,20 @@ public class DataTuple {
 			case "sueDist":
 				returnString = discreteDistance(sueDist);
 				break;
+			case "blinkyIndex":
+				returnString = Integer.toString(this.blinkyIndex);
+				break;
+			case "inkyIndex":
+				returnString = Integer.toString(this.inkyIndex);
+				break;
+			case "pinkyIndex":
+				returnString = Integer.toString(this.pinkyIndex);
+				break;
+			case "sueIndex":
+				returnString = Integer.toString(this.sueIndex);
+				break;
+			case "pacManPosition":
+				returnString = Integer.toString(this.pacmanPosition);
 		}
 		return returnString;
 	}

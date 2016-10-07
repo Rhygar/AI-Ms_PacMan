@@ -12,6 +12,8 @@ import java.util.TreeMap;
 import dataRecording.DataSaverLoader;
 import dataRecording.DataTuple;
 import pacman.controllers.Controller;
+import pacman.game.Constants.DM;
+import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
@@ -77,8 +79,7 @@ public class MyPacMan extends Controller<MOVE> {
 		
 		//3. Otherwise, if the attribute list is empty, return N as a leaf node labeled with the majority class in D
 		if(attributeList.size() == 0) {
-			N.isLeafNode = true;
-			N.myMove = majorityClass(dataTuples);
+//			N.myMove = majorityClass(dataTuples);
 			N.setLabel(majorityClass(dataTuples).toString());
 			return N;
 		}
@@ -131,11 +132,11 @@ public class MyPacMan extends Controller<MOVE> {
 		MOVE move = null;
 		
 		HashMap<MOVE,Integer> moves = new HashMap<MOVE, Integer>();
-		moves.put(move.UP, 0);
-		moves.put(move.DOWN, 0);
-		moves.put(move.RIGHT, 0);
-		moves.put(move.LEFT, 0);
-		moves.put(move.NEUTRAL, 0);
+		moves.put(MOVE.UP, 0);
+		moves.put(MOVE.DOWN, 0);
+		moves.put(MOVE.RIGHT, 0);
+		moves.put(MOVE.LEFT, 0);
+		moves.put(MOVE.NEUTRAL, 0);
 		
 		for(int i = 0; i < D.size(); i++) {
 			MOVE key = D.get(i).DirectionChosen;
@@ -160,11 +161,13 @@ public class MyPacMan extends Controller<MOVE> {
 		return true;
 	}
 	
-	public MOVE getMoveRecursively(Node node, DataTuple data) {
+	public MOVE getMoveRecursively(Node node, DataTuple data, Game game) {
 		MOVE move = null;
 		
 		if(node.isLeafNode()) {
-			move = MOVE.valueOf(node.getLabel());
+//			move = MOVE.valueOf(node.getLabel());
+//			game.getNextMoveTowardsTarget(game.getPacmanCurrentNodeIndex(), game.getGhostCurrentNodeIndex(GHOST.BLINKY), DM.PATH);
+			int pacManPosition = Integer.parseInt(data.getAttributeValue("pacManPosition"));
 		} else {
 			//hämta värdet på attributet, ex age skulle gett youth, middleAge, old
 			String valueNode = data.getAttributeValue(node.getName());
@@ -173,14 +176,14 @@ public class MyPacMan extends Controller<MOVE> {
 			//gå ner till barnet med värdet på attributet
 			Node goToNode = (Node) hash.get(valueNode);
 			//rekursiv metod
-			move = getMoveRecursively(goToNode, data);
+			move = getMoveRecursively(goToNode, data, game);
 		}
 		return move;
 	}
 	
 	public MOVE getGoing(Game game) {
 		DataTuple temp = new DataTuple(game, null);
-		return getMoveRecursively(root, temp);
+		return getMoveRecursively(root, temp, game);
 	}
 	
 	public MOVE getMove(Game game, long timeDue) 
@@ -192,7 +195,7 @@ public class MyPacMan extends Controller<MOVE> {
 		MyPacMan pac = new MyPacMan();
 		pac.buildTree();
 		System.out.println(pac.root.getLabel());
-		System.out.println(pac.root.getChild("YES").getLabel());
+//		System.out.println(pac.root.getChild("YES").getLabel());
 //		System.out.println(pac.root.getChild("YES").getChild("HIGH").getLabel());
 //		System.out.println(pac.root.getgetLabel());
 	}
