@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sound.midi.MidiDevice.Info;
+
 import dataRecording.DataTuple;
 import pacman.game.Constants.MOVE;
 
 public class GetAttribute {	
+	
 	public double iterativDichotomiser(ArrayList<DataTuple> D,ArrayList<String> attr ){
 		int totalDataTuples = D.size();
 		double info = 0;
@@ -25,7 +28,9 @@ public class GetAttribute {
 		return info;
 	}
 	
-	public void returnAttribute(HashMap <String, ArrayList<String>> allAttributes, ArrayList<DataTuple> data, ArrayList<String> attributeList){
+	public double returnAttribute(HashMap <String, ArrayList<String>> allAttributes, ArrayList<DataTuple> data, ArrayList<String> attributeList){
+		double bestValue = 0.0;
+		double gain = 0.0;
 		for(int i = 0; i < attributeList.size(); i++){
 			double infoTotal = 0;
 			ArrayList<String> currentAttr = allAttributes.get(attributeList.get(i));
@@ -57,8 +62,13 @@ public class GetAttribute {
 				}
 				int totalDir = up + down + right + left + neutral;
 				int T = nbrOfEachValue[j];
-				double infoX = ((T/data.size()) * (-(up/T)*(Math.log10(up/T)/Math.log10(2))-(down/T)*(Math.log10(down/T)/Math.log10(2))-(right/T)*(Math.log10(right/T)/Math.log10(2))-(left/T)*(Math.log10(left/T)/Math.log10(2))-(neutral/T)*(Math.log10(neutral/T)/Math.log10(2))));
+				double infoX = ((T/data.size()) * ((-(up/T)*(Math.log10(up/T)/Math.log10(2))-(down/T)*(Math.log10(down/T)/Math.log10(2))-(right/T)*(Math.log10(right/T)/Math.log10(2))-(left/T)*(Math.log10(left/T)/Math.log10(2))-(neutral/T)*(Math.log10(neutral/T)/Math.log10(2)))));
+				if(infoX > bestValue){
+					bestValue += infoX;
+				}
 			}	
+			
 		}
+		return bestValue;
 	}
 }
