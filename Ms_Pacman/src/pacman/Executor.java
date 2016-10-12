@@ -85,11 +85,11 @@ public class Executor
 		 */
 		
 		//run game for data collection
-		exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new StarterGhosts(),visual);
+//		exec.runGameTimed(new DataCollectorController(new KeyBoardInput()),new StarterGhosts(),visual);
 		
-//		MyPacMan pac = new MyPacMan();
-//		pac.buildTree();
-//		exec.runGameTimed(pac,new StarterGhosts(),visual);
+		MyPacMan pac = new MyPacMan();
+		pac.buildTree();
+		exec.runGameTimed(pac,new StarterGhosts(),visual);
 	}
 	
     /**

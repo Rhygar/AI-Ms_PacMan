@@ -1,6 +1,5 @@
 package pacman.entries.pacman;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import pacman.game.Constants.MOVE;
@@ -9,7 +8,6 @@ public class Node {
 	boolean isLeafNode = true;
 	String label = "";
 	HashMap<String, Node> childrenNodes = new HashMap<String, Node>();
-	MOVE myMove = MOVE.NEUTRAL;
 	
 	public Node() {
 		
@@ -27,11 +25,6 @@ public class Node {
 		return this.label;
 	}
 
-	public MOVE getMove() {
-//		childNodes.r
-		return myMove;
-	}
-	
 	public boolean isLeafNode() {
 		return isLeafNode;
 	}

@@ -296,28 +296,28 @@ public class DataTuple {
 		String returnString = "";
 		switch(attribute) {
 			case "isBlinkyEdible":
-				returnString = discreteBoolean(isBlinkyEdible);
+				returnString = discreteBoolean(this.isBlinkyEdible);
 				break;
 			case "isInkyEdible":
-				returnString = discreteBoolean(isInkyEdible);
+				returnString = discreteBoolean(this.isInkyEdible);
 				break;
-			case "isPinkEdible":
-				returnString = discreteBoolean(isPinkyEdible);
+			case "isPinkyEdible":
+				returnString = discreteBoolean(this.isPinkyEdible);
 				break;
 			case "isSueEdible":
-				returnString = discreteBoolean(isSueEdible);
+				returnString = discreteBoolean(this.isSueEdible);
 				break;
 			case "blinkyDist":
-				returnString = discreteDistance(blinkyDist);
+				returnString = discreteDistance(this.blinkyDist);
 				break;
 			case "inkyDist":
-				returnString = discreteDistance(inkyDist);
+				returnString = discreteDistance(this.inkyDist);
 				break;
 			case "pinkyDist":
-				returnString = discreteDistance(pinkyDist);
+				returnString = discreteDistance(this.pinkyDist);
 				break;
 			case "sueDist":
-				returnString = discreteDistance(sueDist);
+				returnString = discreteDistance(this.sueDist);
 				break;
 			case "blinkyIndex":
 				returnString = Integer.toString(this.blinkyIndex);
