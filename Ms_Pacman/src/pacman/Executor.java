@@ -90,6 +90,7 @@ public class Executor
 		MyPacMan pac = new MyPacMan();
 		pac.buildTree();
 		exec.runGameTimed(pac,new StarterGhosts(),visual);
+//		exec.runGameTimed(pac,new AggressiveGhosts(),visual);
 	}
 	
     /**

@@ -20,25 +20,41 @@ import pacman.game.Game;
  */
 public class MyPacMan extends Controller<MOVE> {
 
-	private ArrayList<DataTuple> data;
+	private ArrayList<DataTuple> trainingData = new ArrayList<DataTuple>();
+	private ArrayList<DataTuple> testData = new ArrayList<DataTuple>();
 	public static HashMap<String, ArrayList<String>> attributes = new HashMap<String, ArrayList<String>>();
 	private Node root;
 
 	public MyPacMan() {
 		// Load the file into an arraylist
 		DataTuple[] dataTuples = DataSaverLoader.LoadPacManData();
-		this.data = new ArrayList<DataTuple>(Arrays.asList(dataTuples));
-
+		System.out.println("Number of total DataTuples: " + dataTuples.length);
+//		this.data = new ArrayList<DataTuple>(Arrays.asList(dataTuples));
+		//create traning and test data. 2/3 into traning and 1/3 into test
+		generateTrainingAndTestData(dataTuples);
 		// create the ArrayLists (values for each attribute)
 		ArrayList<String> yesOrNo = new ArrayList<String>();
 		yesOrNo.add("YES");
 		yesOrNo.add("NO");
 
 		ArrayList<String> discreteDistance = new ArrayList<String>();
+//		discreteDistance.add("LOW");
+//		discreteDistance.add("MEDIUM");
+//		discreteDistance.add("HIGH");
+		discreteDistance.add("VERY_LOW");
 		discreteDistance.add("LOW");
 		discreteDistance.add("MEDIUM");
 		discreteDistance.add("HIGH");
-
+		discreteDistance.add("VERY_HIGH");
+		discreteDistance.add("NONE");
+		
+		ArrayList<String> directions = new ArrayList<String>();
+		directions.add("RIGHT");
+		directions.add("LEFT");
+		directions.add("UP");
+		directions.add("DOWN");
+		directions.add("NEUTRAL");
+		
 		// add to hashmap
 		attributes.put("isBlinkyEdible", yesOrNo);
 		attributes.put("isInkyEdible", yesOrNo);
@@ -48,15 +64,54 @@ public class MyPacMan extends Controller<MOVE> {
 		attributes.put("inkyDist", discreteDistance);
 		attributes.put("pinkyDist", discreteDistance);
 		attributes.put("sueDist", discreteDistance);
+		attributes.put("blinkyDir", directions);
+		attributes.put("inkyDir", directions);
+		attributes.put("pinkyDir", directions);
+		attributes.put("sueDir", directions);
+//		attributes.put("blinkySameDir", yesOrNo);
+//		attributes.put("inkySameDir", yesOrNo);
+//		attributes.put("pinkySameDir", yesOrNo);
+//		attributes.put("sueSameDir", yesOrNo);
+//		attributes.put("isJunction", yesOrNo);
 	}
 
+	private void generateTrainingAndTestData(DataTuple[] data) {
+//		for(int i = 0; i < data.length; i++) {
+//			if(i%3 == 0) {
+//				testData.add(data[i]);
+//			} else {
+//				trainingData.add(data[i]);
+//			}
+//		}
+		
+		
+		Random rand = new Random();
+		ArrayList<DataTuple> allData = new ArrayList<DataTuple>(Arrays.asList(data));
+		double testDataSize = 0, totalSize = allData.size();
+		double proportion = testDataSize/totalSize;
+		
+		while((proportion) < 0.33) {
+			int index = rand.nextInt(allData.size());
+			testData.add(allData.get(index));
+			allData.remove(index);
+			testDataSize++;
+			proportion = testDataSize/totalSize;
+		}
+		for(int i = 0; i < allData.size(); i++) {
+			trainingData.add(allData.get(i));
+		}
+		
+		System.out.println("Size of traningData: " + trainingData.size());
+		System.out.println("Size of testData: " + testData.size());
+	}
 	@SuppressWarnings("unchecked")
 	public void buildTree() {
 		ArrayList<String> attrList = new ArrayList<String>(attributes.keySet());
 		for(int i = 0; i < attrList.size(); i++) {
 			System.out.println(attrList.get(i));
 		}
-		root = generateTree(data, attrList);
+		
+		root = generateTree(trainingData, attrList);
 	}
 
 	public Node generateTree(ArrayList<DataTuple> dataTuples,ArrayList<String> attributeList) {
@@ -74,7 +129,7 @@ public class MyPacMan extends Controller<MOVE> {
 
 		// 3. Otherwise, if the attribute list is empty, return N as a leaf node
 		// labeled with the majority class in D
-		if (attributeList.size() == 0) {
+		if (attributeList.isEmpty()) {
 			// N.myMove = majorityClass(dataTuples);
 			N.setLabel(majorityClass(dataTuples).toString());
 			return N;
@@ -90,7 +145,6 @@ public class MyPacMan extends Controller<MOVE> {
 		// 4.2 Label N as A and remove A from the attribute list
 		N.setLabel(A);
 		attributeList.remove(A);
-//		attributeList.trimToSize();
 		// 4.3 For each value in aj in attribute A:
 		ArrayList<String> valuesInA = attributes.get(A);
 //		System.out.println(valuesInA.size());
@@ -111,17 +165,11 @@ public class MyPacMan extends Controller<MOVE> {
 			// generateTree(Dj,attribute) as a child node to N
 			else {
 				N.addChild(aj, generateTree(dj, copyArrayList));
+//				N.addChild(aj, generateTree(dj, attributeList));
 			}
 			// 4.4 return N
 		}
 		return N;
-	}
-
-	public String getAttributeTest(ArrayList<DataTuple> data,
-			ArrayList<String> attributes) {
-
-		Random rand = new Random();
-		return attributes.get(rand.nextInt(attributes.size()));
 	}
 
 	public ArrayList<DataTuple> createSubset(ArrayList<DataTuple> dataTuples,
@@ -170,11 +218,14 @@ public class MyPacMan extends Controller<MOVE> {
 	}
 
 	public String returnAttribute(HashMap<String, ArrayList<String>> allAttributes,ArrayList<DataTuple> data, ArrayList<String> attributeList) {
-		String returnAttribute = "DOG";
+		String returnAttribute = "";
 		double bestInfoAD = 10000000;
 		// check every attribute
 		for (int i = 0; i < attributeList.size(); i++) {
 //			System.out.println("Now cheking attribute: " + attributeList.get(i));
+			if(attributeList.get(i).equals("blinkyDir")) {
+//				System.out.println("NOW DEBUG");
+			}
 			double infoAD = 0;
 			ArrayList<String> valueInCurrentAttribute = allAttributes.get(attributeList.get(i));
 			int[] nbrOfEachValue = new int[valueInCurrentAttribute.size()];
@@ -202,21 +253,16 @@ public class MyPacMan extends Controller<MOVE> {
 					} else {
 						neutral++;						
 					}
-
 				}
 				double T = nbrOfEachValue[j];
-//				double T = up+down+right+left;
-//				System.out
-//						.println("CurrentAttri: " + attributeList.get(i)
-//								+ "\n Current Value in attri: "
-//								+ valueInCurrentAttribute.get(j)
-//								+ "Values UP: " + up + "Values DOWN: " + down
-//								+ "Values RIGHT: " + right + "Values LEFT: "
-//								+ left + "Values NEUTRAL: " + neutral);
+				System.out
+						.println("CurrentAttri: " + attributeList.get(i)
+								+ "\n Current Value in attri: "
+								+ valueInCurrentAttribute.get(j)
+								+ "Values UP: " + up + "Values DOWN: " + down
+								+ "Values RIGHT: " + right + "Values LEFT: "
+								+ left + "Values NEUTRAL: " + neutral);
 				if (T != 0.0) {
-					
-					//PROBLEMET ÄR ATT LOG(0) = -OÄNDLIGHETEN, så att när någon av up,down,left,right, är 0 så ballar det ur
-					
 					infoAD += (T / data.size()) * (
 							- ((up / T)      * (log2(up/T)))
 							- ((down / T)    * (log2(down/T)))
@@ -227,7 +273,6 @@ public class MyPacMan extends Controller<MOVE> {
 				} else {
 					// System.out.println("T = 0 for " + attributeList.get(i));
 				}
-
 			}
 			 System.out.println("InfoAD for " + attributeList.get(i) + " :" +
 			 infoAD);
@@ -246,9 +291,20 @@ public class MyPacMan extends Controller<MOVE> {
 		float res = (float)(Math.log(x) / Math.log(2));
 		return res;
 	}
-
-	public static double logb(double a, double b) {
-		return Math.log(a) / Math.log(b);
+	
+	public void validateTraning() {
+		MOVE shouldBeMove, generatedMove;
+		double nbrOfCorrectMoves = 0, accuracy;
+		
+		for(int i = 0; i < testData.size(); i++) {
+			shouldBeMove = testData.get(i).DirectionChosen;
+			generatedMove = getMoveRecursively(root, testData.get(i));
+			if(shouldBeMove.toString().equals(generatedMove.toString())) {
+				nbrOfCorrectMoves++;
+			}
+		}
+		accuracy = nbrOfCorrectMoves / testData.size();
+		System.out.println("Accuracy: " + accuracy);
 	}
 
 	public MOVE getMoveRecursively(Node node, DataTuple data) {
@@ -256,10 +312,6 @@ public class MyPacMan extends Controller<MOVE> {
 
 		if (node.isLeafNode()) {
 			 move = MOVE.valueOf(node.getLabel());
-//			// game.getNextMoveTowardsTarget(game.getPacmanCurrentNodeIndex(),
-//			// game.getGhostCurrentNodeIndex(GHOST.BLINKY), DM.PATH);
-//			int pacManPosition = Integer.parseInt(data
-//					.getAttributeValue("pacManPosition"));
 		} else {
 			// hämta värdet på attributet, ex age skulle gett youth, middleAge,
 			// old
@@ -280,17 +332,13 @@ public class MyPacMan extends Controller<MOVE> {
 	}
 
 	public MOVE getMove(Game game, long timeDue) {
-		// Place your game logic here to play the game as Ms Pac-Man
 		return getGoing(game);
 	}
 
 	public static void main(String[] args) {
 		MyPacMan pac = new MyPacMan();
 		pac.buildTree();
-//		System.out.println(pac.root.getLabel());
-		// System.out.println(pac.root.getChild("YES").getLabel());
-		// System.out.println(pac.root.getChild("YES").getChild("HIGH").getLabel());
-		// System.out.println(pac.root.getgetLabel());
+		pac.validateTraning();
 	}
 
 }

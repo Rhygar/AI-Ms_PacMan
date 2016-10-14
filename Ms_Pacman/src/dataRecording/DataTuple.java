@@ -41,6 +41,7 @@ public class DataTuple {
 	public int inkyIndex;
 	public int pinkyIndex;
 	public int sueIndex;
+	public boolean isJunction;
 
 	// Ghost this, dir, dist, edible - BLINKY, INKY, PINKY, SUE
 	public boolean isBlinkyEdible = false;
@@ -84,6 +85,7 @@ public class DataTuple {
 		this.inkyIndex = game.getGhostCurrentNodeIndex(GHOST.INKY);
 		this.pinkyIndex = game.getGhostCurrentNodeIndex(GHOST.PINKY);
 		this.sueIndex = game.getGhostCurrentNodeIndex(GHOST.SUE);
+		this.isJunction = game.isJunction(this.pacmanPosition);
 
 		if (game.getGhostLairTime(GHOST.BLINKY) == 0) {
 			this.isBlinkyEdible = game.isGhostEdible(GHOST.BLINKY);
@@ -285,11 +287,13 @@ public class DataTuple {
 	}
 	
 	public String discreteBoolean(boolean b) {
-		if(b) {
-			return "YES";
-		} else {
-			return "NO";
-		}
+		if(b) return "YES";
+		else return "NO";
+	}
+	
+	public String sameDirection(MOVE ghostDirection) {
+		if(ghostDirection == this.DirectionChosen) return "YES";
+		else return "NO";
 	}
 	
 	public String getAttributeValue(String attribute) {
@@ -308,31 +312,52 @@ public class DataTuple {
 				returnString = discreteBoolean(this.isSueEdible);
 				break;
 			case "blinkyDist":
-				returnString = discreteDistance(this.blinkyDist);
+//				returnString = discreteDistance(this.blinkyDist);
+				returnString = discretizeDistance(this.blinkyDist).toString();
 				break;
 			case "inkyDist":
-				returnString = discreteDistance(this.inkyDist);
+//				returnString = discreteDistance(this.inkyDist);
+				returnString = discretizeDistance(this.inkyDist).toString();
 				break;
 			case "pinkyDist":
-				returnString = discreteDistance(this.pinkyDist);
+//				returnString = discreteDistance(this.pinkyDist);
+				returnString = discretizeDistance(this.pinkyDist).toString();
 				break;
 			case "sueDist":
-				returnString = discreteDistance(this.sueDist);
+//				returnString = discreteDistance(this.sueDist);
+				returnString = discretizeDistance(this.sueDist).toString();
 				break;
-			case "blinkyIndex":
-				returnString = Integer.toString(this.blinkyIndex);
+			case "blinkyDir":
+				returnString = this.blinkyDir.toString();
 				break;
-			case "inkyIndex":
-				returnString = Integer.toString(this.inkyIndex);
+			case "inkyDir":
+				returnString = this.inkyDir.toString();
 				break;
-			case "pinkyIndex":
-				returnString = Integer.toString(this.pinkyIndex);
+			case "pinkyDir":
+				returnString = this.pinkyDir.toString();
 				break;
-			case "sueIndex":
-				returnString = Integer.toString(this.sueIndex);
+			case "sueDir":
+				returnString = this.sueDir.toString();
 				break;
-			case "pacManPosition":
-				returnString = Integer.toString(this.pacmanPosition);
+			case "blinkySameDir":
+				returnString = sameDirection(this.blinkyDir);
+				break;
+			case "inkySameDir":
+				returnString = sameDirection(this.inkyDir);
+				break;
+			case "pinkySameDir":
+				returnString = sameDirection(this.pinkyDir);
+				break;
+			case "sueSameDir":
+				returnString = sameDirection(this.sueDir);
+				break;
+			case "powerPillClose":
+				
+				break;
+			case "isJunction":
+				returnString = discreteBoolean(this.isJunction);
+				break;
+				
 		}
 		return returnString;
 	}
