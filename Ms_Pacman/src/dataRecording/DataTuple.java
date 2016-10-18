@@ -278,9 +278,11 @@ public class DataTuple {
 		String returnString = "";
 		if(distance <= 20 && distance >= 0) {
 			returnString = "LOW";
-		} else if(distance > 20 && distance < 50) {
+		} 
+		else if(distance > 20 && distance < 50) {
 			returnString = "MEDIUM";
-		} else {
+		} 
+		else {
 			returnString = "HIGH";
 		}
 		return returnString;
