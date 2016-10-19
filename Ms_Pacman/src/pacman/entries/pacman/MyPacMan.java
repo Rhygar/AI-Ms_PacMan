@@ -160,6 +160,7 @@ public class MyPacMan extends Controller<MOVE> {
 		// 4.3 For each value in aj in attribute A:
 		ArrayList<String> valuesInA = attributes.get(A);
 		for (String aj : valuesInA) {
+			//make a copy of the attributelist, otherwise it will be changed in recursive calls
 			ArrayList<String> copyArrayList = (ArrayList<String>) attributeList.clone();
 			// 4.3a Seperate all tuples in D so that attribute A takes the value
 			// aj, creating the subset Dj
