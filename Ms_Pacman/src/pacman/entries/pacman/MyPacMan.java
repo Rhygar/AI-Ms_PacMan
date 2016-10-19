@@ -1,5 +1,8 @@
 package pacman.entries.pacman;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,12 +29,16 @@ public class MyPacMan extends Controller<MOVE> {
 	private Node root;
 
 	public MyPacMan() {
-		// Load the file into an arraylist
-		DataTuple[] dataTuples = DataSaverLoader.LoadPacManData();
-		System.out.println("Number of total DataTuples: " + dataTuples.length);
-//		this.data = new ArrayList<DataTuple>(Arrays.asList(dataTuples));
-		//create traning and test data. 2/3 into traning and 1/3 into test
-		generateTrainingAndTestData(dataTuples);
+		try {
+			System.setOut(new PrintStream(new FileOutputStream("output.txt")));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//create traning and test data.
+		generateTrainingAndTestData();
+		
 		// create the ArrayLists (values for each attribute)
 		ArrayList<String> yesOrNo = new ArrayList<String>();
 		yesOrNo.add("YES");
@@ -75,7 +82,14 @@ public class MyPacMan extends Controller<MOVE> {
 //		attributes.put("isJunction", yesOrNo);
 	}
 
-	private void generateTrainingAndTestData(DataTuple[] data) {
+	/**
+	 * This method loads the data stored in AI-Ms_PacMan/Ms_Pacman/myData/traningData.txt into DataTuple array,
+	 * and split it into one set of traningdata and one set of testdata. It randomly picks data instead of taking
+	 * for example the 1st 1/3 of the data.  
+	 */
+	public void generateTrainingAndTestData() {
+		DataTuple[] data = DataSaverLoader.LoadPacManData();
+		
 //		for(int i = 0; i < data.length; i++) {
 //			if(i%3 == 0) {
 //				testData.add(data[i]);
@@ -83,7 +97,6 @@ public class MyPacMan extends Controller<MOVE> {
 //				trainingData.add(data[i]);
 //			}
 //		}
-		
 		
 		Random rand = new Random();
 		ArrayList<DataTuple> allData = new ArrayList<DataTuple>(Arrays.asList(data));
@@ -101,19 +114,24 @@ public class MyPacMan extends Controller<MOVE> {
 			trainingData.add(allData.get(i));
 		}
 		
-		System.out.println("Size of traningData: " + trainingData.size());
-		System.out.println("Size of testData: " + testData.size());
+//		System.out.println("Size of traningData: " + trainingData.size());
+//		System.out.println("Size of testData: " + testData.size());
 	}
-	@SuppressWarnings("unchecked")
+
+	/**
+	 * This method build the decision tree using the generateTree() method
+	 */
 	public void buildTree() {
 		ArrayList<String> attrList = new ArrayList<String>(attributes.keySet());
-		for(int i = 0; i < attrList.size(); i++) {
-			System.out.println(attrList.get(i));
-		}
-		
 		root = generateTree(trainingData, attrList);
 	}
 
+	/**
+	 * This 
+	 * @param dataTuples
+	 * @param attributeList
+	 * @return
+	 */
 	public Node generateTree(ArrayList<DataTuple> dataTuples,ArrayList<String> attributeList) {
 
 		// 1. Create Node N
@@ -147,10 +165,6 @@ public class MyPacMan extends Controller<MOVE> {
 		attributeList.remove(A);
 		// 4.3 For each value in aj in attribute A:
 		ArrayList<String> valuesInA = attributes.get(A);
-//		System.out.println(valuesInA.size());
-//		for(int k = 0; k < valuesInA.size(); k++) {
-//			System.out.println(valuesInA.get(k));
-//		}
 		for (String aj : valuesInA) {
 			ArrayList<String> copyArrayList = (ArrayList<String>) attributeList.clone();
 			// 4.3a Seperate all tuples in D so that attribute A takes the value
@@ -186,7 +200,6 @@ public class MyPacMan extends Controller<MOVE> {
 	public MOVE majorityClass(ArrayList<DataTuple> D) {
 
 		MOVE move = null;
-
 		HashMap<MOVE, Integer> moves = new HashMap<MOVE, Integer>();
 		moves.put(MOVE.UP, 0);
 		moves.put(MOVE.DOWN, 0);
@@ -222,10 +235,6 @@ public class MyPacMan extends Controller<MOVE> {
 		double bestInfoAD = 10000000;
 		// check every attribute
 		for (int i = 0; i < attributeList.size(); i++) {
-//			System.out.println("Now cheking attribute: " + attributeList.get(i));
-			if(attributeList.get(i).equals("blinkyDir")) {
-//				System.out.println("NOW DEBUG");
-			}
 			double infoAD = 0;
 			ArrayList<String> valueInCurrentAttribute = allAttributes.get(attributeList.get(i));
 			int[] nbrOfEachValue = new int[valueInCurrentAttribute.size()];
@@ -255,13 +264,6 @@ public class MyPacMan extends Controller<MOVE> {
 					}
 				}
 				double T = nbrOfEachValue[j];
-				System.out
-						.println("CurrentAttri: " + attributeList.get(i)
-								+ "\n Current Value in attri: "
-								+ valueInCurrentAttribute.get(j)
-								+ "Values UP: " + up + "Values DOWN: " + down
-								+ "Values RIGHT: " + right + "Values LEFT: "
-								+ left + "Values NEUTRAL: " + neutral);
 				if (T != 0.0) {
 					infoAD += (T / data.size()) * (
 							- ((up / T)      * (log2(up/T)))
@@ -271,18 +273,14 @@ public class MyPacMan extends Controller<MOVE> {
 							- ((neutral / T) * (log2(neutral/T)))
 							);
 				} else {
-					// System.out.println("T = 0 for " + attributeList.get(i));
 				}
 			}
-			 System.out.println("InfoAD for " + attributeList.get(i) + " :" +
-			 infoAD);
+//			 System.out.println("InfoAD for " + attributeList.get(i) + " :" + infoAD);
 			if (infoAD < bestInfoAD) {
 				bestInfoAD = infoAD;
 				returnAttribute = attributeList.get(i);
 			}
 		}
-		System.out.println("Attribute returned: " + returnAttribute);
-		System.out.println();
 		return returnAttribute;
 	}
 	
@@ -325,7 +323,7 @@ public class MyPacMan extends Controller<MOVE> {
 		}
 		return move;
 	}
-
+	
 	public MOVE getGoing(Game game) {
 		DataTuple temp = new DataTuple(game, null);
 		return getMoveRecursively(root, temp);
@@ -338,6 +336,7 @@ public class MyPacMan extends Controller<MOVE> {
 	public static void main(String[] args) {
 		MyPacMan pac = new MyPacMan();
 		pac.buildTree();
+		pac.root.print();
 		pac.validateTraning();
 	}
 
