@@ -4,15 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pacman.game.Constants.MOVE;
-
+/**
+ * This class represents a node in a decision tree. Nodes can either be a leafnode or a parent to childrenNodes,
+ * which are stored in a hashmap.
+ * @author David Tran & John Tengvall
+ * @date 19-10-2016
+ */
 public class Node {
 	boolean isLeafNode = true;
 	String label = "";
 	HashMap<String, Node> childrenNodes = new HashMap<String, Node>();
 	
-	public Node() {
-		
-	}
+	public Node() {}
 	
 	public Node(String label) {
 		this.label = label;
@@ -29,7 +32,6 @@ public class Node {
 	public boolean isLeafNode() {
 		return isLeafNode;
 	}
-	
 	
 	public void addChild(String value, Node childNode) {
 		childrenNodes.put(value, childNode);
@@ -52,6 +54,9 @@ public class Node {
 		print("");
 	}
 	
+	/*
+	 * This method prints the tree
+	 */
 	private void print(String indent) {
 
         if (this.isLeafNode) {
@@ -70,11 +75,4 @@ public class Node {
             }
         }
     }
-	
- 	public static void main(String... args) {
- 		Node N = new Node();
- 		N.label = "Steve";
- 		System.out.println(N.getName());
- 		
- 	}
 }

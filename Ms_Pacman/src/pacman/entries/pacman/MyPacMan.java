@@ -16,10 +16,14 @@ import pacman.controllers.Controller;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
-/*
- * This is the class you need to modify for your entry. In particular, you need to
- * fill in the getAction() method. Any additional classes you write should either
- * be placed in this package or sub-packages (e.g., game.entries.pacman.mypackage).
+/**
+ * This class works as an agent Pacman. The class creates a decision tree, based on the data which is 
+ * stored in a textfile. The data is collected from playing and recording from Pacman game, played by a human.
+ * Then when the Pacman agent plays, the game will call the function getMove() and depending on it's game state, 
+ * the method will return a direction for the Pacman, using the decision tree.  
+ * @author David Tran & John Tengvall
+ * @date 19-10-2016
+ *
  */
 public class MyPacMan extends Controller<MOVE> {
 
@@ -29,6 +33,7 @@ public class MyPacMan extends Controller<MOVE> {
 	private Node root;
 
 	public MyPacMan() {
+		//prints all outputs into a file output.txt. Contains the decision tree
 		try {
 			System.setOut(new PrintStream(new FileOutputStream("output.txt")));
 		} catch (FileNotFoundException e) {
@@ -39,7 +44,7 @@ public class MyPacMan extends Controller<MOVE> {
 		//create traning and test data.
 		generateTrainingAndTestData();
 		
-		// create the ArrayLists (values for each attribute)
+/* **** create the ArrayLists (values for each attribute) *************/
 		ArrayList<String> yesOrNo = new ArrayList<String>();
 		yesOrNo.add("YES");
 		yesOrNo.add("NO");
@@ -62,7 +67,7 @@ public class MyPacMan extends Controller<MOVE> {
 		directions.add("DOWN");
 		directions.add("NEUTRAL");
 		
-		// add to hashmap
+/* ******add to hashmap which hold all the attributes and its value ***************/
 		attributes.put("isBlinkyEdible", yesOrNo);
 		attributes.put("isInkyEdible", yesOrNo);
 		attributes.put("isPinkyEdible", yesOrNo);
@@ -88,16 +93,7 @@ public class MyPacMan extends Controller<MOVE> {
 	 * for example the 1st 1/3 of the data.  
 	 */
 	public void generateTrainingAndTestData() {
-		DataTuple[] data = DataSaverLoader.LoadPacManData();
-		
-//		for(int i = 0; i < data.length; i++) {
-//			if(i%3 == 0) {
-//				testData.add(data[i]);
-//			} else {
-//				trainingData.add(data[i]);
-//			}
-//		}
-		
+		DataTuple[] data = DataSaverLoader.LoadPacManData();		
 		Random rand = new Random();
 		ArrayList<DataTuple> allData = new ArrayList<DataTuple>(Arrays.asList(data));
 		double testDataSize = 0, totalSize = allData.size();
@@ -113,9 +109,6 @@ public class MyPacMan extends Controller<MOVE> {
 		for(int i = 0; i < allData.size(); i++) {
 			trainingData.add(allData.get(i));
 		}
-		
-//		System.out.println("Size of traningData: " + trainingData.size());
-//		System.out.println("Size of testData: " + testData.size());
 	}
 
 	/**
@@ -127,9 +120,10 @@ public class MyPacMan extends Controller<MOVE> {
 	}
 
 	/**
-	 * This 
-	 * @param dataTuples
-	 * @param attributeList
+	 * This method follows the algorithm for building a decision tree, described in the book Data Mining Concept Technics
+	 * figure 8.3 in chapter 8
+	 * @param dataTuples the data from playing as a human
+	 * @param attributeList the attributes which we find necessary for the tree
 	 * @return
 	 */
 	public Node generateTree(ArrayList<DataTuple> dataTuples,ArrayList<String> attributeList) {
@@ -186,8 +180,14 @@ public class MyPacMan extends Controller<MOVE> {
 		return N;
 	}
 
-	public ArrayList<DataTuple> createSubset(ArrayList<DataTuple> dataTuples,
-			String attribute, String aj) {
+	/**
+	 * This method creates a subset of a dataset. 
+	 * @param dataTuples all data 
+	 * @param attribute the current attribute 
+	 * @param aj the value of the attribute we want to create subset for
+	 * @return the subset created
+	 */
+	public ArrayList<DataTuple> createSubset(ArrayList<DataTuple> dataTuples, String attribute, String aj) {
 		ArrayList<DataTuple> newDataTuple = new ArrayList<DataTuple>();
 		for (DataTuple d : dataTuples) {
 			if (d.getAttributeValue(attribute).equals(aj)) {
@@ -197,6 +197,11 @@ public class MyPacMan extends Controller<MOVE> {
 		return newDataTuple;
 	}
 
+	/**
+	 * This method checks which MOVE is the majority of the dataset
+	 * @param the dataset to check
+	 * @return the MOVE which is the most common in the dataset
+	 */
 	public MOVE majorityClass(ArrayList<DataTuple> D) {
 
 		MOVE move = null;
@@ -220,6 +225,11 @@ public class MyPacMan extends Controller<MOVE> {
 		return move;
 	}
 
+	/**
+	 * This method checks if all datatuples in the dataset have the same class
+	 * @param dataTuples the data to check
+	 * @return boolean value. True if all datatuples have the same class, otherwise false
+	 */
 	public boolean allSameClass(ArrayList<DataTuple> dataTuples) {
 		MOVE move = dataTuples.get(0).DirectionChosen;
 		for (int i = 1; i < dataTuples.size(); i++) {
@@ -230,6 +240,14 @@ public class MyPacMan extends Controller<MOVE> {
 		return true;
 	}
 
+	/**
+	 * This method uses the ID3 algorithm to find which attribute gives the most gain, and returns the attribute. 
+	 * It uses a mathemtical approach to calculate and validate the values for every attribute from a list.  
+	 * @param allAttributes all the attributes we are using
+	 * @param data all data stored 
+	 * @param attributeList the attributes we want to evaluate 
+	 * @return the best attribute to use
+	 */
 	public String returnAttribute(HashMap<String, ArrayList<String>> allAttributes,ArrayList<DataTuple> data, ArrayList<String> attributeList) {
 		String returnAttribute = "";
 		double bestInfoAD = 10000000;
@@ -272,10 +290,8 @@ public class MyPacMan extends Controller<MOVE> {
 							- ((left / T)    * (log2(left/T)))
 							- ((neutral / T) * (log2(neutral/T)))
 							);
-				} else {
 				}
 			}
-//			 System.out.println("InfoAD for " + attributeList.get(i) + " :" + infoAD);
 			if (infoAD < bestInfoAD) {
 				bestInfoAD = infoAD;
 				returnAttribute = attributeList.get(i);
@@ -290,7 +306,11 @@ public class MyPacMan extends Controller<MOVE> {
 		return res;
 	}
 	
-	public void validateTraning() {
+	/**
+	 * This method is used to validate how good the agent acts. 
+	 * @return a double value between 0 and 1
+	 */
+	public double validateTraning() {
 		MOVE shouldBeMove, generatedMove;
 		double nbrOfCorrectMoves = 0, accuracy;
 		
@@ -303,22 +323,28 @@ public class MyPacMan extends Controller<MOVE> {
 		}
 		accuracy = nbrOfCorrectMoves / testData.size();
 		System.out.println("Accuracy: " + accuracy);
+		return accuracy;
 	}
 
+	/**
+	 * This method is used to traverse a tree to find a path down to a leaf node, to know which move to make
+	 * @param node the current node 
+	 * @param data the game state information stored in a datatuple
+	 * @return the move to make
+	 */
 	public MOVE getMoveRecursively(Node node, DataTuple data) {
 		MOVE move = null;
-
+		//if leaf node is reached, return the move
 		if (node.isLeafNode()) {
 			 move = MOVE.valueOf(node.getLabel());
 		} else {
-			// hämta värdet på attributet, ex age skulle gett youth, middleAge,
-			// old
+			//get the label of the attribute
 			String valueNode = data.getAttributeValue(node.getName());
-			// hämta nodens barn
+			//get the childnodes 
 			HashMap hash = node.getChildren();
-			// gå ner till barnet med värdet på attributet
+			//go down to a certain childnode, depending on the value of the attribute
 			Node goToNode = (Node) hash.get(valueNode);
-			// rekursiv metod
+			//recusively traverse
 			move = getMoveRecursively(goToNode, data);
 		}
 		return move;
@@ -329,6 +355,9 @@ public class MyPacMan extends Controller<MOVE> {
 		return getMoveRecursively(root, temp);
 	}
 
+	/**
+	 * This method is called from the game, whenever it wants to have the agents next move
+	 */
 	public MOVE getMove(Game game, long timeDue) {
 		return getGoing(game);
 	}
