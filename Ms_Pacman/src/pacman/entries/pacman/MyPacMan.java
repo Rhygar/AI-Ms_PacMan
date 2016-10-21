@@ -21,6 +21,9 @@ import pacman.game.Game;
  * stored in a textfile. The data is collected from playing and recording from Pacman game, played by a human.
  * Then when the Pacman agent plays, the game will call the function getMove() and depending on it's game state, 
  * the method will return a direction for the Pacman, using the decision tree.  
+ * 
+ * Readme file available in this package
+ * 
  * @author David Tran & John Tengvall
  * @date 19-10-2016
  *
@@ -35,7 +38,7 @@ public class MyPacMan extends Controller<MOVE> {
 	public MyPacMan() {
 		//prints all outputs into a file output.txt. Contains the decision tree
 		try {
-			System.setOut(new PrintStream(new FileOutputStream("output.txt")));
+			System.setOut(new PrintStream(new FileOutputStream("src/pacman/entries/pacman/David&Johns_DecisionTree.txt")));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,6 +120,9 @@ public class MyPacMan extends Controller<MOVE> {
 	public void buildTree() {
 		ArrayList<String> attrList = new ArrayList<String>(attributes.keySet());
 		root = generateTree(trainingData, attrList);
+		//uncommenting next line will print the tree to the file David&Johns_DecisionTree.txt
+		root.print(); 
+		validateTraning();
 	}
 
 	/**
